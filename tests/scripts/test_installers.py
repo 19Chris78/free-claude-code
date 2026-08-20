@@ -2211,7 +2211,8 @@ def test_install_ps1_rejects_conflicting_rtk_command(
     result = powershell_harness.run("-Rtk")
 
     assert result.returncode != 0
-    assert "not a compatible Rust Token Killer installation" in result.stderr
+    normalized_stderr = " ".join(result.stderr.split())
+    assert "not a compatible Rust Token Killer installation" in normalized_stderr
     assert not any("rtk-ai/rtk" in call for call in powershell_harness.calls())
     assert not any("astral.sh" in call for call in powershell_harness.calls())
 

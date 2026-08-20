@@ -97,6 +97,24 @@ def _smoke_config(**overrides) -> SmokeConfig:
     return SmokeConfig(**values)
 
 
+def test_env_example_uses_model_placeholders_for_smoke_overrides() -> None:
+    env_example = (Path(__file__).parents[2] / ".env.example").read_text(
+        encoding="utf-8"
+    )
+    documented_overrides = [
+        line
+        for line in env_example.splitlines()
+        if line.startswith("# FCC_SMOKE_MODEL_")
+    ]
+
+    assert documented_overrides
+    assert [
+        line
+        for line in documented_overrides
+        if not line.endswith("=<provider/model-id>")
+    ] == []
+
+
 def test_ollama_is_default_smoke_target() -> None:
     assert "ollama" in DEFAULT_TARGETS
     assert "ollama" in TARGET_REQUIRED_ENV

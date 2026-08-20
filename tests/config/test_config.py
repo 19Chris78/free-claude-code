@@ -41,6 +41,7 @@ def test_settings_defaults_are_valid_and_nonempty() -> None:
     assert settings.whisper_device == "cpu"
     assert settings.whisper_model == "base"
     assert settings.enable_web_server_tools is True
+    assert settings.host == "127.0.0.1"
     assert settings.proxy_auth_enabled is False
     assert settings.proxy_auth_token == "freecc"
     assert [
@@ -80,6 +81,7 @@ def test_direct_settings_construction_performs_no_environment_io(
     ("key", "attribute", "value", "expected"),
     [
         ("MODEL", "model", "deepseek/deepseek-chat", "deepseek/deepseek-chat"),
+        ("HOST", "host", "0.0.0.0", "0.0.0.0"),
         ("PROVIDER_RATE_LIMIT", "provider_rate_limit", "20", 20),
         (
             "PROVIDER_PROGRESS_TIMEOUT",

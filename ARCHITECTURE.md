@@ -386,6 +386,10 @@ Pi, managed messaging, and local model-catalog calls all receive the retained
 token. The API boundary checks the boolean first and uses constant-time token
 comparison only when enforcement is enabled.
 
+The server binds to `127.0.0.1` by default. Remote or cross-container access
+remains available by setting `HOST=0.0.0.0` explicitly and should be paired with
+`PROXY_AUTH_ENABLED=true` before the port is exposed.
+
 Model routing remains tiered: `MODEL` is the fallback route;
 `MODEL_FABLE`, `MODEL_OPUS`, `MODEL_SONNET`, and `MODEL_HAIKU` are optional
 overrides. [config/model_refs.py](src/free_claude_code/config/model_refs.py) owns
@@ -439,11 +443,12 @@ non-loopback clients and non-local origins.
 Admin routes live beside these in [api/admin_routes.py](src/free_claude_code/api/admin_routes.py).
 
 Authentication is handled by `require_proxy_auth()` in
-[api/dependencies.py](src/free_claude_code/api/dependencies.py). If `ANTHROPIC_AUTH_TOKEN` is blank,
-proxy auth is disabled. Otherwise FCC accepts exactly `Authorization: Bearer
-<token>`. Other credential headers are ignored, so a stale provider API key
-cannot mask valid proxy authorization. The complete bearer token is compared
-in constant time; no model suffix or other token mutation is accepted.
+[api/dependencies.py](src/free_claude_code/api/dependencies.py).
+`PROXY_AUTH_ENABLED` controls enforcement. When enforcement is enabled, FCC
+accepts exactly `Authorization: Bearer <token>` and compares the complete,
+retained `ANTHROPIC_AUTH_TOKEN` in constant time. Other credential headers are
+ignored, so a stale provider API key cannot mask valid proxy authorization; no
+model suffix or other token mutation is accepted.
 
 HTTP request correlation is owned at ingress. A pure ASGI boundary creates one
 opaque FCC request ID before routing, places it in log context and request state,
